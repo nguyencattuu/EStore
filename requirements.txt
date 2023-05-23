@@ -7,7 +7,7 @@ numpy
 argon2-cffi
 pdfkit
 pandas
-matplotlib
-seaborn
+#matplotlib
+#seaborn
 django-mathfilters
 requests
