@@ -1,0 +1,226 @@
+{% extends 'store/_Master.html' %}
+{% block title_tab %}Tài khoản của tôi{% endblock %}
+{% load static %}
+{% load humanize %}
+        
+{% block main_content %}
+
+    <!-- Breadcrumb Start -->
+    <div class="breadcrumb-wrap">
+        <div class="container-fluid">
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'store:trang_chu' %}">Trang chủ</a></li>
+                <li class="breadcrumb-item active">Tài khoản của tôi</li>
+            </ul>
+        </div>
+    </div>
+    <!-- Breadcrumb End -->
+    
+    <!-- My Account Start -->
+    <div class="my-account">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="nav flex-column nav-pills" role="tablist" aria-orientation="vertical">
+                        <!-- <a class="nav-link active" id="dashboard-nav" data-toggle="pill" href="#dashboard-tab" role="tab"><i class="fa fa-tachometer-alt"></i>Dashboard</a> -->
+                        <!-- <a class="nav-link" id="payment-nav" data-toggle="pill" href="#payment-tab" role="tab"><i class="fa fa-credit-card"></i>Payment Method</a>
+                        <a class="nav-link" id="address-nav" data-toggle="pill" href="#address-tab" role="tab"><i class="fa fa-map-marker-alt"></i>address</a> -->
+                        <a class="nav-link active" id="account-nav" data-toggle="pill" href="#account-tab" role="tab"><i class="fa fa-user"></i>Thông tin của tôi</a>
+                        <a class="nav-link" id="orders-nav" data-toggle="pill" href="#orders-tab" role="tab"><i class="fa fa-shopping-bag"></i>Đơn hàng</a>
+                        <a class="nav-link" href="index.html"><i class="fa fa-sign-out-alt"></i>Đăng xuất</a>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="tab-content">
+
+                        <!-- <div class="tab-pane fade show active" id="dashboard-tab" role="tabpanel" aria-labelledby="dashboard-nav">
+                            <h4>Dashboard</h4>
+                            <p>
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. In condimentum quam ac mi viverra dictum. In efficitur ipsum diam, at dignissim lorem tempor in. Vivamus tempor hendrerit finibus. Nulla tristique viverra nisl, sit amet bibendum ante suscipit non. Praesent in faucibus tellus, sed gravida lacus. Vivamus eu diam eros. Aliquam et sapien eget arcu rhoncus scelerisque.
+                            </p> 
+                        </div> -->
+
+                        <div class="tab-pane fade show active" id="account-tab" role="tabpanel" aria-labelledby="account-nav">
+                            <h4>Thông tin của tôi</h4>
+
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        {{ ket_qua_cap_nhat|safe }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input class="form-control" type="text" placeholder="Họ" name="ho" value="{{ khach_hang.last_name }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input class="form-control" type="text" placeholder="Tên" name="ten" value="{{ khach_hang.first_name }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input class="form-control" type="text" placeholder="Điện thoại" name="dien_thoai" value="{{ khach_hang.phone }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input class="form-control" type="text" placeholder="Email" disabled value="{{ khach_hang.email }}">
+                                    </div>
+                                    <div class="col-md-12">
+                                        <input class="form-control" type="text" placeholder="Địa chỉ" name="dia_chi" value="{{ khach_hang.address }}">
+                                    </div>
+                                    <div class="col-md-12">
+                                        <button class="btn" type="submit" value="Cập nhật" name="btnCapNhat">Cập nhật</button>
+                                        <br><br>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <h4>Đổi mật khẩu</h4>
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        {{ ket_qua_doi_mat_khau|safe }}
+                                    </div>
+                                    <div class="col-md-12">
+                                        <input class="form-control" type="password" placeholder="Mật khẩu hiện tại" name="mat_khau_hien_tai">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input class="form-control" type="password" placeholder="Mật khẩu mới" name="mat_khau_moi">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input class="form-control" type="password" placeholder="Xác nhận mật khẩu" name="xac_nhan_mat_khau">
+                                    </div>
+                                    <div class="col-md-12">
+                                        <button class="btn" type="submit" value="Đổi mật khẩu" name="btnDoiMatKhau">Đổi mật khẩu</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="tab-pane fade" id="orders-tab" role="tabpanel" aria-labelledby="orders-nav">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th>STT</th>
+                                            <th>Mã đơn hàng</th>
+                                            <th>Ngày đặt hàng</th>
+                                            <th>Tổng thành tiền</th>
+                                            <th>Trạng thái</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for order in orders %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>#{{ order.pk }}</td>
+                                                <td>{{ order.created }}</td>
+                                                <td>{{ order.total|floatformat:0|intcomma }}</td>
+                                                <td>
+                                                    {% if order.status == 1 %}
+                                                    <span class="badge badge-pill badge-success">Đã giao</span>
+                                                    {% else %}
+                                                    <span class="badge badge-pill badge-danger">Chưa giao</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td><button class="btn btn-sm" data-toggle="modal"
+                                                            data-target="#o{{ order.pk }}">Chi tiết</button></td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- <div class="tab-pane fade" id="payment-tab" role="tabpanel" aria-labelledby="payment-nav">
+                            <h4>Payment Method</h4>
+                            <p>
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. In condimentum quam ac mi viverra dictum. In efficitur ipsum diam, at dignissim lorem tempor in. Vivamus tempor hendrerit finibus. Nulla tristique viverra nisl, sit amet bibendum ante suscipit non. Praesent in faucibus tellus, sed gravida lacus. Vivamus eu diam eros. Aliquam et sapien eget arcu rhoncus scelerisque.
+                            </p> 
+                        </div> -->
+
+                        <!-- <div class="tab-pane fade" id="address-tab" role="tabpanel" aria-labelledby="address-nav">
+                            <h4>Address</h4>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5>Payment Address</h5>
+                                    <p>123 Payment Street, Los Angeles, CA</p>
+                                    <p>Mobile: 012-345-6789</p>
+                                    <button class="btn">Edit Address</button>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5>Shipping Address</h5>
+                                    <p>123 Shipping Street, Los Angeles, CA</p>
+                                    <p>Mobile: 012-345-6789</p>
+                                    <button class="btn">Edit Address</button>
+                                </div>
+                            </div>
+                        </div> -->
+
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- My Account End -->
+
+    <!-- Modal -->
+    {% for order_id, order_items in dict_orders.items %}
+    <div class="modal fade" id="o{{ order_id }}" tabindex="-1" aria-labelledby="order_detail" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="order_detail">Đơn hàng #{{ order_id }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-borderless">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Hình ảnh</th>
+                                <th scope="col">Tên sản phẩm</th>
+                                <th scope="col" class="text-center">Số lượng</th>
+                                <th scope="col" class="text-right">Đơn giá</th>
+                                <th scope="col" class="text-right">Giảm giá</th>
+                                <th scope="col" class="text-right">Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order_item in order_items %}
+                            <tr>
+                                <th scope="row">{{ forloop.counter }}</th>
+                                <td>
+                                    <img src="{{ order_item.product_image.url }}" alt="{{ order_item.product_name }}" width="70">
+                                </td>
+                                <td style="width: 40%">{{ order_item.product_name }}</td>
+                                <td class="text-center">{{ order_item.quantity }}</td>
+                                <td class="text-right">{{ order_item.price|floatformat:'0'|intcomma }}</td>
+                                <td class="text-right">{{ order_item.discount|floatformat:'0'|intcomma }}</td>
+                                <td class="text-right">{{ order_item.total_price|floatformat:'0'|intcomma }}</td>
+                            </tr>
+                            {% endfor %}
+                            <tr style="color: red;">
+                                <td colspan="5" class="text-right"><h5><b>Tổng tiền:</b></h5></td>
+                                <td colspan="2" class="text-right">
+                                    <h5><b>{{ order_items.0.total|floatformat:0|intcomma }} đ</b></h5>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <a href="{% url 'customer:xuat_bao_cao_don_hang' order_id %}" class="btn btn-sm btn-secondary"
+                    target="_blank">
+                        <i class="fa fa-download"></i> Tải đơn hàng
+                    </a>
+                    <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">
+                        <i class="fa fa-times"></i> Đóng
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% endblock %}

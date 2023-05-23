@@ -1,0 +1,160 @@
+{% extends 'store/_Master.html' %}
+{% block title_tab %}{{ title_subcategory }}{% endblock %}
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+        
+{% block main_content %}
+        
+    <!-- Breadcrumb Start -->
+    <div class="breadcrumb-wrap">
+        <div class="container-fluid">
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'store:trang_chu' %}">Trang chủ</a></li>
+                <li class="breadcrumb-item active">{{ title_subcategory }}</li>
+            </ul>
+        </div>
+    </div>
+    <!-- Breadcrumb End -->
+    
+    <!-- Product List Start -->
+    <div class="product-view">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-9">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="product-view-top">
+                                <form method="get">
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <h4>{{ title_subcategory }}</h4>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="product-price-range">
+                                                <div class="dropdown">
+                                                    <select class="dropdown-toggle" name="gia" required="">
+                                                        <option class="dropdown-item" value="">Lọc theo giá</option>
+                                                        <option class="dropdown-item" value="0-500000" {% if range_gia == '0-500000' %}selected{% endif %}>0 - 500.000</option>
+                                                        <option class="dropdown-item" value="500000-1000000" {% if range_gia == '500000-1000000' %}selected{% endif %}>500.000 - 1.000.000</option>
+                                                        <option class="dropdown-item" value="1000000-2000000" {% if range_gia == '1000000-2000000' %}selected{% endif %}>1.000.000 - 2.000.000</option>
+                                                        <option class="dropdown-item" value="2000000-3000000" {% if range_gia == '2000000-3000000' %}selected{% endif %}>2.000.000 - 3.000.000</option>
+                                                        <option class="dropdown-item" value="3000000-" {% if range_gia == '3000000-' %}selected{% endif %}>3.000.000 trở lên</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <button type="submit" class="btn">Lọc</button>
+                                            <input type="hidden" name="tu_khoa" value="{{ keyword }}">
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        {% for product in products_pager %}
+                        <div class="col-md-4">
+                            <div class="product-item">
+                                <div class="product-title" style="height: 110px">
+                                    <a href="{% url 'store:chi_tiet_san_pham' product.pk %}">{{ product }}</a>
+                                </div>
+                                <div class="product-image">
+                                    <a href="{% url 'store:chi_tiet_san_pham' product.pk %}">
+                                        <img src="{{ product.image.url }}" alt="Product Image">
+                                    </a>
+                                </div>
+                                <div class="product-price">
+                                    <form method="POST" action="{% url 'cart:mua_ngay' product.pk %}">
+                                        {% csrf_token %}
+                                        <h3 style="font-size: 22px">{{ product.price|floatformat:0|intcomma }}<span>đ</span></h3>
+                                        <button class="btn" type="submit" name="btnMuaNgay{{ product.pk }}" value="{{ product }}">
+                                            <i class="fa fa-shopping-cart"></i> Mua ngay
+                                        </button>
+                                        <input type="hidden" name="quantity{{ product.pk }}" value="1">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                    </div>
+                    
+                    <!-- Pagination Start -->
+                    {% if products_pager.paginator.num_pages > 1 %}
+                        <div class="col-md-12">
+                            <nav aria-label="Page navigation example">
+                                <ul class="pagination justify-content-center">
+                                    
+                                    {% if products_pager.has_previous %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?trang={{ products_pager.previous_page_number }}" tabindex="-1">Trước</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#" tabindex="-1">Trước</a>
+                                        </li>
+                                    {% endif %}
+
+                                    {% if products_pager.number > 5 %}
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#" tabindex="-1">...</a>
+                                        </li>
+                                    {% endif %}
+
+                                    {% for i in products_pager.paginator.page_range %}
+                                        {% if i < products_pager.number|add:5 %}
+                                            {% if i > products_pager.number|sub:5 %}
+                                                {% if products_pager.number == i %}
+                                                    <li class="page-item active">
+                                                        <a class="page-link" href="?trang={{ i }}">{{ i }}</a>
+                                                    </li>
+                                                {% else %}
+                                                    <li class="page-item">
+                                                        <a class="page-link" href="?trang={{ i }}">{{ i }}</a>
+                                                    </li>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endif%}
+                                    {% endfor %}
+
+                                    {% if products_pager.number < products_pager.paginator.num_pages|sub:4 %}
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#" tabindex="-1">...</a>
+                                        </li>
+                                    {% endif %}
+
+                                    {% if products_pager.has_next %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?trang={{ products_pager.next_page_number }}">Sau</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#">Sau</a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                        </div>
+                    {% endif %}
+                    <!-- Pagination Start -->
+                </div>           
+                
+                <!-- Side Bar Start -->
+                <div class="col-lg-3 sidebar">
+                    {% include 'store/parts/subcategory.html' %}
+                    
+                    {% include 'store/parts/brands_text.html' %}
+                    
+                    {% include 'store/parts/tags.html' %}
+                </div>
+                <!-- Side Bar End -->
+            </div>
+        </div>
+    </div>
+    <!-- Product List End -->  
+    
+    <!-- Brand Start -->
+    {% include 'store/parts/brands.html' %}
+    <!-- Brand End -->
+{% endblock %}
